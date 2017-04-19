@@ -12,3 +12,5 @@ The laser node generates the fake laser(circular scan) scan data in the laser_fr
 The send_pose node publishes a custom message that has x,y,angle fields. The node publishes data imitating a robot moving along a circular path.
 
 The laser.launch file runs the both the above mentioned nodes , the static transform and rviz with the laser.rviz configuration.
+
+command to be run "roslaunch maidbot_laser laser.launch"
