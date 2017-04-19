@@ -1,12 +1,13 @@
 <launch>
 
-<node pkg="rostopic" type="rostopic" name="pose" args="pub -r 100 /pose maidbot_laser/position '{x: 2.5, y: 1.0, angle: 45}' "/>
+<!--<node pkg="rostopic" type="rostopic" name="pose" args="pub -r 100 /pose maidbot_laser/position '{x: 2.5, y: 1.0, angle: 45}' "/>-->
 
 <node pkg="maidbot_laser" type="laser_node" name="laser_node" respawn="false"/>
 
-<node pkg="tf" type="static_transform_publisher" respawn="false"  name="base_laser" args="0 1 1.5 0 0 0 1 /base_frame /laser_frame 30"/>
+<node pkg="maidbot_laser" type="send_pose" name="send_pose" respawn="false" />
+
+<node pkg="tf" type="static_transform_publisher" respawn="false"  name="base_laser" args="0 0.5 1.5 0 0 0 1 /base_link /laser_frame 100"/>
 
 <node pkg="rviz" type="rviz" name="maid_bot_rviz" respawn="false" args="-d $(find maidbot_laser)/laser.rviz"/>
-
 
 </launch>

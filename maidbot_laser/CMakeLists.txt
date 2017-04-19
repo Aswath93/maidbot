@@ -49,7 +49,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 add_message_files(FILES
-  position.msg
+  Position.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -115,7 +115,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
+include_directories(include)
 
 ## Declare a C++ library
 # add_library(maidbot_laser
@@ -194,5 +194,13 @@ add_executable(laser_node src/laser_node.cpp)
 
 add_dependencies(laser_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(laser_node
+  ${catkin_LIBRARIES}
+)
+
+add_executable(send_pose
+  src/send_pose.cpp
+)
+add_dependencies(send_pose ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(send_pose
   ${catkin_LIBRARIES}
 )

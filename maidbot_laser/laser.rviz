@@ -53,11 +53,11 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_frame:
+        base_link:
           Value: true
         laser_frame:
           Value: true
-        world:
+        map:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -65,8 +65,8 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        world:
-          base_frame:
+        map:
+          base_link:
             laser_frame:
               {}
       Update Interval: 0
@@ -104,7 +104,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: world
+    Fixed Frame: map
     Frame Rate: 30
   Name: root
   Tools:
@@ -159,4 +159,4 @@ Window Geometry:
     collapsed: false
   Width: 1861
   X: 49
-  Y: 33
+  Y: 23

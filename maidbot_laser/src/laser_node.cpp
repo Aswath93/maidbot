@@ -1,88 +1,60 @@
-#include<ros/ros.h>
-#include<stdio.h>
-#include<sensor_msgs/LaserScan.h>
-#include<tf/transform_broadcaster.h>
-#include<maidbot_laser/position.h>
+#include"laser_node.h"
 
-
-class Robot
-{
-    public:
-        Robot(ros::NodeHandle n);
-        ~Robot();
-        void run();
-        ros::NodeHandle n;
-
-    
-    private:
-        // update_pose();
-        void generate_scan();
-        void send_transforms();
-        void pose_cb(const maidbot_laser::position::ConstPtr &msg);
-        std::array<float,359> ar;
-        sensor_msgs::LaserScan scan;
-        tf::Transform transform;
-        tf::TransformBroadcaster br;
-        ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("scan",1000);
-        ros::Subscriber pos_sub = n.subscribe<maidbot_laser::position>("pose",1000,&Robot::pose_cb,this);
-};
-
-
-Robot::Robot(ros::NodeHandle n):n(n){}
+// Robot::Robot(ros::NodeHandle n):n(n){}
+Robot::Robot(){}
 
 Robot::~Robot(){}
 
-void Robot::generate_scan()
+// generate and publish laser scan data on the scan topic
+void Robot::generateScan()
 {
-    this -> scan.header.stamp = ros::Time::now();
-    this -> scan.header.frame_id = "laser_frame";
-    this -> scan.angle_min = -3.12414;
-    this -> scan.angle_max = 3.14159265359;
-    this -> scan.angle_increment = 0.0174533;
-    this -> scan.time_increment = 0;
-    this -> scan.scan_time = 0;
-    this -> scan.range_min = 0;
-    this -> scan.range_max = 5;
+    scan_.header.stamp = ros::Time::now();
+    scan_.header.frame_id = "laser_frame";
+    scan_.angle_min = -3.12414;
+    scan_.angle_max = 3.14159265359;
+    scan_.angle_increment = 0.0174533;
+    scan_.time_increment = 0;
+    scan_.scan_time = 0;
+    scan_.range_min = 0;
+    scan_.range_max = 5;
 
-    this -> ar.fill(2.0);
-    ROS_INFO("filling in scan values");
-    this -> scan.ranges.resize(359);
-
+    scan_array_.fill(2.0);
+    scan_.ranges.resize(359);
+    // populate the msg with the values.Here the values are the same,so they form a circle
     for(int i = 0 ; i < 359 ; i ++)
     {
-        this -> scan.ranges[i] = this->ar[i];
+        scan_.ranges[i] = scan_array_[i];
     }
 
-    this -> scan_pub.publish(this->scan);
-    ROS_INFO("scans sent");
-
+    scan_pub_.publish(scan_);
 }
 
-void Robot::pose_cb(const maidbot_laser::position::ConstPtr &msg)
+// Call back for the position subscriber.Uses the position data to transform the robot's base frame
+void Robot::poseCb(const maidbot_laser::Position::ConstPtr &msg)
 {
-      this -> transform.setOrigin( tf::Vector3(msg->x, msg->y, 0.0) );
+      transform_.setOrigin( tf::Vector3(msg->x, msg->y, 0.0) );
       tf::Quaternion q;
       q.setRPY(0, 0, msg->angle);
-      this -> transform.setRotation(q);
-      this -> br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "base_frame"));
-      ROS_INFO("transform published");
+      transform_.setRotation(q);
+      base_frame_broadcaster_.sendTransform(tf::StampedTransform(transform_, ros::Time::now(), "map", "base_link"));
 }
 
 void Robot::run()
 {
-    this->generate_scan();
+    generateScan();
 }
 
 int main(int argc,char** argv)
 {
     ros::init(argc,argv,"laser_node");
-    ROS_INFO("initialised");
-    ros::NodeHandle nh;
-    Robot robot=Robot(nh);
+    // ros::NodeHandle nh;
+    // Robot robot = Robot(nh);
+    Robot robot = Robot();
+    ros::Rate rate(10);
     while(ros::ok())
     {
         ros::spinOnce();
         robot.run();
+        rate.sleep();
     }
-    
 }
